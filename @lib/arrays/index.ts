@@ -17,3 +17,10 @@ export function sort(a: any[], ascending=true, property?: string): any[] {
         }
     }
 }
+
+export function getIndexCircular(a: any[], indx: number): any {
+    if (indx >= 0) {
+        return a[indx % a.length]
+    }
+    return a[a.length + (indx % a.length)]
+}

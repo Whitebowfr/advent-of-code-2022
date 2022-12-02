@@ -51,6 +51,7 @@ function getWinningType(opponent: Shape, outcome: Outcomes): Shape {
         opponent 
             + ((outcome - 6) / 3))
     // This is so that when the outcome is 6, it removes 0, when it's 3, it removes 1, and when it's 0, it removes 2.
+    // This way I get either the next shape, the same one, or the previous one.
 }
 
 function partOne(data: string) {
@@ -65,8 +66,6 @@ function partTwo(data: string) {
     return totalScore
 }
 
-partOne(day2)
-
 // pretty sure one-liners are impossible
 // 1 hour later, I can safely say that it was possible.
 
@@ -77,15 +76,28 @@ const partTwoOneLiner = (data: string) =>
         .split(" ")
         .map(y => 
             ["A", "B", "C"].indexOf(y) === -1 ? 
-                ["X", "Y", "Z"].indexOf(y) * 3 
-                : ["A", "B", "C"].indexOf(y) + 1))
+                ["X", "Y", "Z"].indexOf(y) * 3 // Outputs 0, 3, 6 for X, Y, Z
+                : ["A", "B", "C"].indexOf(y) + 1)) // Outputs 1, 2, 3 for A, B, C
     .map(x => x[1] 
             + (x[0] + x[1] / 3 
                 + (x[0] + x[1] / 3 >= 2 ? -2 : 1)) 
             % (x[0] + x[1] / 3 >= 2 ? 3 : Infinity)
-            + 1) // I don't even know wtf I just wrote, don't ask me how it works
+            + 1) // I don't even know wtf I just wrote, don't ask me how it works it just does
     .reduce((a, b) => a + b)
 
-
-    
-console.log(partTwoOneLiner(day2))
+const partOneOneLiner = (data: string) => 
+    data
+    .split("\n")
+    .map(x => x
+        .split(" ")
+        .map(y => 
+            ["A", "B", "C", "X", "Y", "Z"].indexOf(y) 
+            % 3 
+            + 1)) // Outputs 1, 2, 3 for A|X, B|Y, C|Z
+    .map(x => x[1] 
+        // Outputs 0, 6, 3 depending on the outcome :
+        + (x[1] === x[0] // Draw
+            ? 3 : (x[1] - x[0] === 1 || x[1] - x[0] === -2) // Victory check
+                ? 6 : 0
+    ))
+    .reduce((a, b) => a + b)

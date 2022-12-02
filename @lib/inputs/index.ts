@@ -1,1 +1,1 @@
-export * from "./day1.js"
+export * from "./days.js"

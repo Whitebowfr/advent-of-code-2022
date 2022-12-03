@@ -24,3 +24,9 @@ export function getIndexCircular(a: any[], indx: number): any {
     }
     return a[a.length + (indx % a.length)]
 }
+
+export function getCommonItems(stopAtFirst: boolean, ...a: any[]): any[]|any {
+    if (a.length < 2) return
+    let result =  a[0].filter((x: any) => a.every(y => y.includes(x)))
+    return stopAtFirst ? result[0] : result
+}

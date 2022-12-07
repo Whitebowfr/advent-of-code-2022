@@ -24,6 +24,7 @@ class Directory {
         return this.fileSize
     }
 
+    // Calculates the size of all subdirectories and updates the parent directory
     updateSize() {
         let total = 0
         for (let child of this.childrens) {
@@ -47,8 +48,11 @@ class Directory {
     }
 }
 
+// This functions maps all subdirectories and creates them
 function parseLsOutput(out: string, currentDir: Directory) {
     let finalDirectory: Directory[] = []
+
+    // Loops trough all of the outputs lines
     out.split("\n").filter(x => x !== "").forEach(x => {
         let dir = new Directory(x.split(" ")[1], currentDir, !x.includes("dir"))
         if (dir.isFile) {
@@ -56,13 +60,17 @@ function parseLsOutput(out: string, currentDir: Directory) {
         }
         finalDirectory.push(dir)
     })
+
     return finalDirectory
 }
 
 function parseDataTree(data: string) {
     let instructionsAndReturnValues = data.split("$ ")
+
+    // Removes the first empty line and the cd / command 
     instructionsAndReturnValues.shift()
     instructionsAndReturnValues.shift()
+
     let dataTree = new Directory("/", null, false)
     let currentDirectory = dataTree
 
@@ -81,9 +89,11 @@ function parseDataTree(data: string) {
 
     for (let instruction of instructionsAndReturnValues) {
         let command = instruction.split("\n")[0]
+
         let outputTemp = instruction.split("\n")
         outputTemp.shift()
         let output = outputTemp.join("\n")
+        
         if (command) {
             interpretCommand(command, output)
         }

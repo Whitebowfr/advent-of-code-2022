@@ -5,24 +5,34 @@ class Directory {
     childrens: Directory[]
     fileSize: number
     parentDirectory: Directory|null
+    isFile: boolean
 
-    constructor(name: string, parent: Directory|null) {
+    constructor(name: string, parent: Directory|null, isFile: boolean) {
         this.name = name
         this.childrens = []
         this.fileSize = 0
         this.parentDirectory = parent
+        this.isFile = isFile
     }
 
     addChildren(...children: Directory[]) {
         this.childrens.push(...children)
+        this.updateSize()
     }
 
     getSize(): number {
-        let total = this.fileSize
+        return this.fileSize
+    }
+
+    updateSize() {
+        let total = 0
         for (let child of this.childrens) {
             total += child.getSize()
         }
-        return total
+        this.setRawSize(total)
+        if (this.parentDirectory) {
+            this.parentDirectory.updateSize()
+        }
     }
 
     getChildren(name: string): Directory|null {
@@ -35,17 +45,13 @@ class Directory {
     setRawSize(size: number) {
         this.fileSize = size
     }
-
-    isDirectory() {
-        return this.fileSize === 0
-    }
 }
 
 function parseLsOutput(out: string, currentDir: Directory) {
     let finalDirectory: Directory[] = []
     out.split("\n").filter(x => x !== "").forEach(x => {
-        let dir = new Directory(x.split(" ")[1], currentDir)
-        if (!x.includes("dir")) {
+        let dir = new Directory(x.split(" ")[1], currentDir, !x.includes("dir"))
+        if (dir.isFile) {
             dir.setRawSize(parseInt(x.split(" ")[0]))
         }
         finalDirectory.push(dir)
@@ -57,7 +63,7 @@ function parseDataTree(data: string) {
     let instructionsAndReturnValues = data.split("$ ")
     instructionsAndReturnValues.shift()
     instructionsAndReturnValues.shift()
-    let dataTree = new Directory("/", null)
+    let dataTree = new Directory("/", null, false)
     let currentDirectory = dataTree
 
     const interpretCommand = (command: string, output?: string) => {
@@ -90,7 +96,7 @@ function partOne(data: string) {
     let lessThan100000: Directory[] = []
 
     const crawlDataTree =  (dir: Directory) => {
-        if (dir.isDirectory() && dir.getSize() < 100000) {
+        if (!dir.isFile && dir.getSize() < 100000) {
             lessThan100000.push(dir)
         }
         dir.childrens.forEach(x => {
@@ -112,7 +118,7 @@ function partTwo(data: string) {
     let possibleDirectories: number[] = []
 
     const crawlDataTree = (dir: Directory) => {
-        if (dir.isDirectory() && dir.getSize() >= spaceNeeded) {
+        if (!dir.isFile && dir.getSize() >= spaceNeeded) {
             possibleDirectories.push(dir.getSize())
         }
         dir.childrens.forEach(x => {
@@ -121,7 +127,5 @@ function partTwo(data: string) {
     }
 
     crawlDataTree(dataTree)
-    console.log(possibleDirectories.sort((a, b) => a - b))
+    console.log(possibleDirectories.sort((a, b) => a - b)[0])
 }
-
-partTwo(day7)

@@ -10,6 +10,3 @@ export default class Vect2 {
         }
     }
 }
-
-let x: number = "a"
-x++

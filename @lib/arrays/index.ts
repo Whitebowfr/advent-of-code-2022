@@ -30,3 +30,9 @@ export function getCommonItems(stopAtFirst: boolean, ...a: any[]): any[]|any {
     let result =  a[0].filter((x: any) => a.every(y => y.includes(x)))
     return stopAtFirst ? result[0] : result
 }
+
+export function map1Dto2D(ar: any[], size: number) {
+    let newAr: any[] = []
+    while(ar.length) newAr.push(ar.splice(0, size))
+    return newAr
+}

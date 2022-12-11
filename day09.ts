@@ -13,14 +13,11 @@ class Ropes {
 
         if (this.parent !== null) {
             if (getEuclidianDistance(this.position, this.parent.position) > 2) {
-                let previousPos = [...this.position]
-                this.position = updateCoords(this.position, getOppositeDirectionMarker(dir))
-                console.log(previousPos, this.position)
-                let directions = getMarkerDifferences(this.position, previousPos as coords)
-                directions.forEach(x => {
-                    this.children?.updatePos(x)
-                })
-                return
+                if (this.parent.parent === null) {
+                    this.position = updateCoords(this.position, getOppositeDirectionMarker(dir))   
+                } else {
+                    this.position = 
+                }
             }
         } else {
             this.position = updateCoords(this.position, dir)
